@@ -109,6 +109,7 @@ class AppWindow(Gtk.Window):
         self.sync_req = 'false' if args.disable_sync else 'true'
         self.show_fps = args.show_fps
         self.enable_callback = args.enable_callback or args.callback_path is not None
+        self.json_files = [os.path.join(self.current_path, "embeddings", f) for f in os.listdir("./embeddings") if os.path.isfile(os.path.join(self.current_path, "embeddings", f))]
         self.json_file = os.path.join(self.current_path, "embeddings.json") if args.json_path is None else args.json_path
         if args.input == "demo":
             self.input_uri = os.path.join(self.current_path, "resources", "clip_example.mp4")

@@ -5,14 +5,15 @@ from gi.repository import Gst
 
 
 gi.require_version('Gst', '1.0')
-
+from clip_app.text_image_matcher import text_image_matcher
 
 class app_callback_class:
     def __init__(self):
         self.frame_count = 0
         self.use_frame = False
         self.running = True
-
+        self.text_image_matcher = text_image_matcher
+        
     def increment(self):
         self.frame_count += 1
 
@@ -38,6 +39,12 @@ def app_callback(self, pad, info, user_data):
     detections = roi.get_objects_typed(hailo.HAILO_DETECTION)
     if len(detections) == 0:
         detections = [roi] # Use the ROI as the detection
+    user_data.increment()
+    if user_data.get_count() % 10 == 0:
+        # import ipdb;ipdb.set_trace()
+        json_file = "embeddings/cry_detection.emb.json"
+        print(f"Loading embeddings from %s\n {json_file}")
+        user_data.text_image_matcher.load_embeddings(json_file)
     # Parse the detections
     for detection in detections:
         track = detection.get_objects_typed(hailo.HAILO_UNIQUE_ID)
