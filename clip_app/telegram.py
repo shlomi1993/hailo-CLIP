@@ -48,7 +48,18 @@ def get_ids_from_URL():
             id = res['message']['chat']['id']))
 
 
-def send_telegram_message(message, debug=False):
+def send_telegram_message(message: str, debug: bool = False) -> tuple[bool, str]:
+    """Send a Telegram message.
+
+    Args:
+        message (str): The message to be sent.
+        debug (bool, optional): Whether to enable debug mode. Defaults to False.
+
+    Returns:
+        tuple[bool, str]: A tuple where the first element indicates the success status 
+        (True for success, False for failure), and the second element is the success message.
+    """
+
     chat_ids = read_ids_from_ini(INI_PATH, "IDs", "list")
     BOT_TOKEN = read_ids_from_ini(INI_PATH, "BOT", "token")
  
