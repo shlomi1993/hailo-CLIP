@@ -3,7 +3,9 @@ import numpy as np
 
 from gsthailo import VideoFrame  # Importing VideoFrame before importing GST is must
 from gi.repository import Gst
+from clip_app.match_handler import handle_match
 from clip_app.text_image_matcher import text_image_matcher
+
 
 def run(video_frame: VideoFrame):
     top_level_matrix = video_frame.roi.get_objects_typed(hailo.HAILO_MATRIX)
@@ -37,7 +39,9 @@ def run(video_frame: VideoFrame):
                     update_tracked_probability = len(used_detection) - 1
     if embeddings_np is not None:
         matches = text_image_matcher.match(embeddings_np, report_all=True, update_tracked_probability=update_tracked_probability)
+        import ipdb; ipdb.set_trace(context=11)
         for match in matches:
+            handle_match(match[0])
             # (row_idx, label, confidence, entry_index) = match
             detection = used_detection[match.row_idx]
             old_classification = detection.get_objects_typed(hailo.HAILO_CLASSIFICATION)

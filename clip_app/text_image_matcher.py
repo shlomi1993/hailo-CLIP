@@ -304,5 +304,6 @@ def main():
         logger.info("Entry %s: %s similarity: %.4f", i, matcher.entries[i].text, matcher.entries[i].probability)
     logger.info("Time taken to run match(): %.4f seconds", end_time - start_time)
 
+
 if __name__ == "__main__":
     main()
