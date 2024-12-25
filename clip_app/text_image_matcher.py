@@ -19,6 +19,7 @@ Example: from TextImageMatcher import text_image_matcher
 
 # Set up the logger
 logger = setup_logger()
+
 # Change the log level to INFO
 set_log_level(logger, logging.INFO)
 

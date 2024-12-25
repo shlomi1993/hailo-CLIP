@@ -101,7 +101,7 @@ class AppWindow(Gtk.Window):
         os.environ["GST_DEBUG_DUMP_DOT_DIR"] = self.current_path
 
         self.tappas_postprocess_dir = os.environ.get('TAPPAS_POST_PROC_DIR', '')
-        if self.tappas_postprocess_dir == '':
+        if self.tappas_postprocess_dir == "":
             logger.error("TAPPAS_POST_PROC_DIR environment variable is not set. Please set it by sourcing setup_env.sh")
             sys.exit(1)
 
