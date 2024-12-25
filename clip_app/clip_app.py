@@ -53,10 +53,10 @@ def main():
     custom_callback_module = load_custom_callback(args.callback_path)
     app_callback = custom_callback_module.app_callback
     app_callback_class = custom_callback_module.app_callback_class
-    
+
     logger = setup_logger()
     set_log_level(logger, logging.INFO)
-    
+
     user_data = app_callback_class()
     win = AppWindow(args, user_data, app_callback)
     win.connect("destroy", on_destroy)
