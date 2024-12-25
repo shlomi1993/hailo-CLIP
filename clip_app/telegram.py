@@ -35,7 +35,8 @@ def read_ids_from_ini(file_path, section, option):
     else:
         raise ValueError(f"Section '{section}' or option '{option}' not found in the INI file.")
 
-def get_ids():
+
+def get_ids_from_URL():
     TOKEN = read_ids_from_ini(INI_PATH, "BOT", "token")
     url = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
     resp = requests.get(url).json() 
@@ -47,13 +48,13 @@ def get_ids():
             id = res['message']['chat']['id']))
 
 
-def send_telegram_message(message, chat_ids, BOT_TOKEN):
-
+def send_telegram_message(message, debug=False):
+    chat_ids = read_ids_from_ini(INI_PATH, "IDs", "list")
+    BOT_TOKEN = read_ids_from_ini(INI_PATH, "BOT", "token")
+ 
     TELEGRAM_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    print(f'chat_ids={chat_ids}')
 
     for c_id in chat_ids:
-        print(f'chat_id={c_id}')
         payload = {
             "chat_id": c_id,
             "text": message,
@@ -61,15 +62,18 @@ def send_telegram_message(message, chat_ids, BOT_TOKEN):
         }
         
         try:
-            print(f"Sending request to: {TELEGRAM_URL}")
-            print(f"Payload: {json.dumps(payload, indent=2)}")
+            if debug:
+                print(f"Sending request to: {TELEGRAM_URL}")
+                print(f"Payload: {json.dumps(payload, indent=2)}")
             
             response = requests.post(TELEGRAM_URL, json=payload)
-            print(f"Response status: {response.status_code}")
-            print(f"Response body: {response.text}")
+            if debug:
+                print(f"Response status: {response.status_code}")
+                print(f"Response body: {response.text}")
             
             response.raise_for_status()
-            print("Message sent successfully")
+            if debug:
+                print("Message sent successfully")
 
         except requests.exceptions.RequestException as e:
             return False, f"Failed to send message: {str(e)}\nResponse: {response.text if 'response' in locals() else 'No response'}"
@@ -79,14 +83,12 @@ def send_telegram_message(message, chat_ids, BOT_TOKEN):
 
 @app.route('/notify', methods=['POST'])
 def notify():
-    chat_ids = read_ids_from_ini(INI_PATH, "IDs", "list")
-    BOT_TOKEN = read_ids_from_ini(INI_PATH, "BOT", "token")
-        
+       
     data = request.get_json()
     if not data or 'message' not in data:
         return jsonify({'error': 'No message provided'}), 400
     
-    success, message = send_telegram_message(data['message'], chat_ids, BOT_TOKEN)
+    success, message = send_telegram_message(data['message'], debug=True)
     if success:
         return jsonify({'status': 'success', 'message': message})
     return jsonify({'status': 'error', 'message': message}), 500
@@ -103,7 +105,7 @@ if __name__ == '__main__':
     set_args_parser(parser)
     args = parser.parse_args()
     if args.chat_id:
-        get_ids()
+        get_ids_from_URL()
     else:
         main()
     
