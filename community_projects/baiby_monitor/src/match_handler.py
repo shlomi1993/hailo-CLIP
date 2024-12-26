@@ -1,32 +1,32 @@
+from dataclasses import dataclass, field
+from typing import Callable
 from community_projects.baiby_monitor.src.play_lullaby import play_mp3
 from community_projects.baiby_monitor.src.baiby_telegram import send_telegram_message
 
 
-_g_crying = False
-_g_sleeping = False
+@dataclass
+class DetectionClass:
+    function: Callable
+    counter: int = field(default=0, init=False)
+    argument: str = field(default="")
+    is_activated: bool = field(default=False, init=False)
 
-
-def set_crying(is_crying: bool) -> None:
-    global _g_crying
-    _g_crying = is_crying
-
-
-def set_sleeping(is_sleeping: bool) -> None:
-    global _g_sleeping
-    _g_sleeping = is_sleeping
-
+    def __post_init__(self):
+        if self.function is None:
+            raise ValueError("function must be provided")
+    
 
 class MatchHandler:
     _instance = None
 
     BEHAVIOR_DICT = {
         # Cry detection
-        "Happy baby": (set_crying, [False]),
-        "Crying baby": (set_crying, [True]),
+        "Calm baby": None,
+        "Crying baby": DetectionClass(function=play_mp3),
 
         # Sleep detection
-        "awaken baby": (set_sleeping, [False]),
-        "sleeping baby": (set_sleeping, [True]),
+        "awaken baby": DetectionClass(function=send_telegram_message, argument="Baby is awake"),
+        "sleeping baby": None,
     }
 
     def __new__(cls):
@@ -35,9 +35,11 @@ class MatchHandler:
         return cls._instance
 
     def handle(self, label: str) -> None:
-        behavior_tuple = self.BEHAVIOR_DICT.get(label)
-        if behavior_tuple:
-            func, args = behavior_tuple
-            func(*args)
-
-            print(f"Now baby is {'crying' if _g_crying else 'not crying'} and {'sleeping' if _g_sleeping else 'not sleeping'}")
+        detection_class = self.BEHAVIOR_DICT.get(label)
+        if detection_class:
+            detection_class.counter += 1
+            if detection_class.counter >= 50 and detection_class.is_activated is False:
+                print(f"\nDetected {label}\n")
+                detection_class.function(detection_class.argument)
+                detection_class.is_activated = True
+                detection_class.counter = 0
