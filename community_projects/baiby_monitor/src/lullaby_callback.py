@@ -84,6 +84,6 @@ def app_callback(self, pad, info, user_data):
             bbox = detection.get_bbox()
             confidence = detection.get_confidence()
             string_to_print += f"Detection: {label} {confidence:.2f}\n"
-    if string_to_print:
-        print(string_to_print)
+    # if string_to_print:
+    #     print(string_to_print)
     return Gst.PadProbeReturn.OK

@@ -2,24 +2,31 @@ from community_projects.baiby_monitor.src.play_lullaby import play_mp3
 from community_projects.baiby_monitor.src.baiby_telegram import send_telegram_message
 
 
+_g_crying = False
+_g_sleeping = False
+
+
+def set_crying(is_crying: bool) -> None:
+    global _g_crying
+    _g_crying = is_crying
+
+
+def set_sleeping(is_sleeping: bool) -> None:
+    global _g_sleeping
+    _g_sleeping = is_sleeping
+
+
 class MatchHandler:
     _instance = None
 
     BEHAVIOR_DICT = {
         # Cry detection
-        "Calm baby": None,
-        "Crying baby": (play_mp3, []),
+        "Happy baby": (set_crying, [False]),
+        "Crying baby": (set_crying, [True]),
 
         # Sleep detection
-        "awaken baby": (play_mp3, []),
-        "sleeping baby": None,
-
-        # Hazard detection
-        "knife": (send_telegram_message, ["knife detected"]),
-        "scissors": (send_telegram_message, ["scissors detected"]),
-        "gun": (send_telegram_message, ["gun detected"]),
-        "glass": (send_telegram_message, ["glass detected"]),
-        "rubber": (send_telegram_message, ["rubber detected"])
+        "awaken baby": (set_sleeping, [False]),
+        "sleeping baby": (set_sleeping, [True]),
     }
 
     def __new__(cls):
@@ -32,3 +39,5 @@ class MatchHandler:
         if behavior_tuple:
             func, args = behavior_tuple
             func(*args)
+
+            print(f"Now baby is {'crying' if _g_crying else 'not crying'} and {'sleeping' if _g_sleeping else 'not sleeping'}")
