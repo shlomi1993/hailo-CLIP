@@ -48,6 +48,11 @@ The BAIby Monitor project is an open-source initiative aimed at developing a sma
 - **Configure Settings**: Use the dashboard to adjust sensitivity levels, notification preferences, and other settings.
 - **Monitor Alerts**: Receive real-time notifications on the dashboard and connected devices when the system detects the baby crying or unusual activity.
 
+## Demo Video
+
+For a visual demonstration of the Baby Monitor project, watch this video:
+[Baby Monitor Demo](https://youtu.be/sXgL5g_A-u0)
+
 ## Contributing
 
 We welcome contributions from the community! To contribute:
