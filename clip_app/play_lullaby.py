@@ -9,7 +9,7 @@ def play_mp3(mp3_file_path=DEFAULT_MP3_FILE):
     try:
         # Play the MP3 file
         print("Playing the MP3 file...")
-        playsound(mp3_file_path)
+        # playssound(mp3_file_path)
     except Exception as e:
         print(f"An error occurred while playing the file: {e}")
 

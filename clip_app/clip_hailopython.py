@@ -39,9 +39,13 @@ def run(video_frame: VideoFrame):
                     update_tracked_probability = len(used_detection) - 1
     if embeddings_np is not None:
         matches = text_image_matcher.match(embeddings_np, report_all=True, update_tracked_probability=update_tracked_probability)
-        import ipdb; ipdb.set_trace(context=11)
         for match in matches:
-            handle_match(match[0])
+            try:
+                print('Try to handle match')
+                handle_match(match[0])
+            except:
+                print('Failed to handle match')
+                pass
             # (row_idx, label, confidence, entry_index) = match
             detection = used_detection[match.row_idx]
             old_classification = detection.get_objects_typed(hailo.HAILO_CLASSIFICATION)
