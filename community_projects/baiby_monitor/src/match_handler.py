@@ -1,30 +1,34 @@
-import subprocess
-
 from play_lullaby import play_mp3
 from baiby_telegram import send_telegram_message
-from multiprocessing import Process, Queue
 
 
-BEHAVIOR_DICT = {
-    # Cry detection
-    "Calm baby": None,
-    "Crying baby": play_mp3(),
+class MatchHandler:
+    _instance = None
 
-    # Sleep detection
-    "awaken baby": play_mp3(),
-    "sleeping baby": play_mp3(),
+    BEHAVIOR_DICT = {
+        # Cry detection
+        "Calm baby": None,
+        "Crying baby": (play_mp3, []),
 
-    # Hazard detection
-    "knife": send_telegram_message("Knife detected\n"),
-    "scissors": send_telegram_message("Scissors detected\n"),
-    "gun": send_telegram_message("Gun detected\n"),
-    "glass": send_telegram_message("Glass detected\n"),
-    "rubber": send_telegram_message("Rubber detected\n")
-}
+        # Sleep detection
+        "awaken baby": (play_mp3, []),
+        "sleeping baby": None,
 
+        # Hazard detection
+        "knife": (send_telegram_message, ["knife detected"]),
+        "scissors": (send_telegram_message, ["scissors detected"]),
+        "gun": (send_telegram_message, ["gun detected"]),
+        "glass": (send_telegram_message, ["glass detected"]),
+        "rubber": (send_telegram_message, ["rubber detected"])
+    }
 
-def handle_match(match: str) -> None:
-    handler = BEHAVIOR_DICT.get(match)
-    subprocess.r
-    if handler:
-        handler()
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(MatchHandler, cls).__new__(cls)
+        return cls._instance
+
+    def handle(self, label: str) -> None:
+        behavior_tuple = self.BEHAVIOR_DICT.get(label)
+        if behavior_tuple:
+            func, args = behavior_tuple
+            func(*args)

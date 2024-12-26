@@ -4,13 +4,19 @@ import os
 
 from gi.repository import Gst
 from clip_app.text_image_matcher import text_image_matcher
+from match_handler import MatchHandler
+
 
 gi.require_version('Gst', '1.0')
+
 
 current_path = os.path.dirname(os.path.realpath(__file__))
 embedding_path = os.path.join(current_path, "..", "embeddings")
 json_files = [os.path.join(embedding_path, f) for f in os.listdir(embedding_path) if os.path.isfile(os.path.join(embedding_path, f))]
 len_json_files = len(json_files)
+
+
+match_handler = MatchHandler()
 
 
 class app_callback_class:
@@ -68,7 +74,7 @@ def app_callback(self, pad, info, user_data):
             string_to_print += ' CLIP Classifications:'
             for classification in classifications:
                 label = classification.get_label()
-                import ipdb; ipdb.set_trace(context=11)
+                match_handler.handle(label)
                 confidence = classification.get_confidence()
                 string_to_print += f'Label: {label} Confidence: {confidence:.2f} '
             string_to_print += '\n'
