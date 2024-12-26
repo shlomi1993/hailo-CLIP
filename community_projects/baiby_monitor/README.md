@@ -21,7 +21,7 @@ The BAIby Monitor project is an open-source initiative aimed at developing a sma
 2. **Navigate to the Project Directory**:
 
    ```bash
-   cd hailo-CLIP/community_projects/baby_monitor
+   cd hailo-CLIP/community_projects/baiby_monitor
    ```
 
 3. **Install Dependencies**:
@@ -50,8 +50,8 @@ The BAIby Monitor project is an open-source initiative aimed at developing a sma
 
 ## Demo Video
 
-For a visual demonstration of the Baby Monitor project, watch this video:
-[Baby Monitor Demo](https://youtu.be/sXgL5g_A-u0)
+For a visual demonstration of the BAIby Monitor project, watch this video:
+[BAIby Monitor Demo](https://youtu.be/sXgL5g_A-u0)
 
 ## Contributing
 
