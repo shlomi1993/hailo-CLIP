@@ -4,7 +4,8 @@ import os
 
 from gi.repository import Gst
 from clip_app.text_image_matcher import text_image_matcher
-from match_handler import MatchHandler
+from community_projects.baiby_monitor.src.match_handler import MatchHandler
+
 
 
 gi.require_version('Gst', '1.0')

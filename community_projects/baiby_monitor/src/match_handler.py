@@ -1,5 +1,5 @@
-from play_lullaby import play_mp3
-from baiby_telegram import send_telegram_message
+from community_projects.baiby_monitor.src.play_lullaby import play_mp3
+from community_projects.baiby_monitor.src.baiby_telegram import send_telegram_message
 
 
 class MatchHandler:
