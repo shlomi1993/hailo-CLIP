@@ -1,22 +1,18 @@
 import os
-import sys
 import argparse
 import logging
+import sys
 import signal
 import importlib.util
-import gi
-
 from functools import partial
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, Gst, GLib
 from clip_app.logger_setup import setup_logger, set_log_level
 from clip_app.clip_pipeline import get_pipeline
 from clip_app.text_image_matcher import text_image_matcher
 from clip_app import gui
-
-
-gi.require_version('Gtk', '3.0')
-gi.require_version('Gst', '1.0')
-
 
 # add logging
 logger = setup_logger()
@@ -35,8 +31,8 @@ def parse_arguments():
     parser.add_argument("--enable-callback", action="store_true", help="Enables the use of the callback function.")
     parser.add_argument("--callback-path", type=str, default=None, help="Path to the custom user callback file.")
     parser.add_argument("--disable-runtime-prompts", action="store_true", help="When set, app will not support runtime prompts. Default is False.")
-    return parser.parse_args()
 
+    return parser.parse_args()
 
 def load_custom_callback(callback_path=None):
     if callback_path:
@@ -46,7 +42,6 @@ def load_custom_callback(callback_path=None):
     else:
         import clip_app.user_callback as custom_callback
     return custom_callback
-
 
 def on_destroy(window):
     logger.info("Destroying window...")
@@ -58,10 +53,10 @@ def main():
     custom_callback_module = load_custom_callback(args.callback_path)
     app_callback = custom_callback_module.app_callback
     app_callback_class = custom_callback_module.app_callback_class
-
+    
     logger = setup_logger()
     set_log_level(logger, logging.INFO)
-
+    
     user_data = app_callback_class()
     win = AppWindow(args, user_data, app_callback)
     win.connect("destroy", on_destroy)
@@ -88,6 +83,7 @@ class AppWindow(Gtk.Window):
 
     # Add the get_pipeline function to the AppWindow class
     get_pipeline = get_pipeline
+    
 
     def __init__(self, args, user_data, app_callback):
         Gtk.Window.__init__(self, title="Clip App")
@@ -101,7 +97,7 @@ class AppWindow(Gtk.Window):
         os.environ["GST_DEBUG_DUMP_DOT_DIR"] = self.current_path
 
         self.tappas_postprocess_dir = os.environ.get('TAPPAS_POST_PROC_DIR', '')
-        if self.tappas_postprocess_dir == "":
+        if self.tappas_postprocess_dir == '':
             logger.error("TAPPAS_POST_PROC_DIR environment variable is not set. Please set it by sourcing setup_env.sh")
             sys.exit(1)
 
@@ -109,7 +105,6 @@ class AppWindow(Gtk.Window):
         self.sync_req = 'false' if args.disable_sync else 'true'
         self.show_fps = args.show_fps
         self.enable_callback = args.enable_callback or args.callback_path is not None
-        self.json_files = [os.path.join(self.current_path, "embeddings", f) for f in os.listdir("./embeddings") if os.path.isfile(os.path.join(self.current_path, "embeddings", f))]
         self.json_file = os.path.join(self.current_path, "embeddings.json") if args.json_path is None else args.json_path
         if args.input == "demo":
             self.input_uri = os.path.join(self.current_path, "resources", "clip_example.mp4")
@@ -182,10 +177,12 @@ class AppWindow(Gtk.Window):
         else:
             logger.warning("Unknown state change return value.")
 
+
     def dump_dot_file(self):
         logger.info("Dumping dot file...")
         Gst.debug_bin_to_dot_file(self.pipeline, Gst.DebugGraphDetails.ALL, "pipeline")
         return False
+
 
     def on_message(self, bus, message):
         t = message.type
@@ -201,6 +198,7 @@ class AppWindow(Gtk.Window):
             src = message.src.get_name()
             logger.info("QOS from %s", src)
         return True
+
 
     def on_eos(self):
         logger.info("EOS received, shutting down the pipeline.")
@@ -219,13 +217,12 @@ class AppWindow(Gtk.Window):
 
     def create_pipeline(self):
         pipeline_str = get_pipeline(self)
-        logger.info(f"PIPELINE:\ngst-launch-1.0 {pipeline_str}")
+        logger.info('PIPELINE:\ngst-launch-1.0 %s', pipeline_str)
         try:
             pipeline = Gst.parse_launch(pipeline_str)
         except GLib.Error as e:
-            logger.error(f"An error occurred while parsing the pipeline: {e}")
+            logger.error("An error occurred while parsing the pipeline: %s", e)
         return pipeline
-
 
 if __name__ == "__main__":
     main()

@@ -1,25 +1,14 @@
 import gi
-import hailo
-import os
-
-from gi.repository import Gst
-from clip_app.text_image_matcher import text_image_matcher
-
 gi.require_version('Gst', '1.0')
-
-current_path = os.path.dirname(os.path.realpath(__file__))
-embedding_path = os.path.join(current_path, "..", "embeddings")
-json_files = [os.path.join(embedding_path, f) for f in os.listdir(embedding_path) if os.path.isfile(os.path.join(embedding_path, f))]
-len_json_files = len(json_files)
-
+from gi.repository import Gst
+import hailo
 
 class app_callback_class:
     def __init__(self):
         self.frame_count = 0
         self.use_frame = False
         self.running = True
-        self.text_image_matcher = text_image_matcher
-        
+
     def increment(self):
         self.frame_count += 1
 
@@ -45,14 +34,6 @@ def app_callback(self, pad, info, user_data):
     detections = roi.get_objects_typed(hailo.HAILO_DETECTION)
     if len(detections) == 0:
         detections = [roi] # Use the ROI as the detection
-    user_data.increment()
-    # Switch embeddings every 10 frames
-    if user_data.get_count() % 10 == 0:
-        # Load embeddings from the next json file
-        json_file = json_files[user_data.get_count() // 10 % len_json_files]
-        # TODO: add logging or remove print
-        print(f"Loading embeddings from {json_file}")
-        user_data.text_image_matcher.load_embeddings(json_file)
     # Parse the detections
     for detection in detections:
         track = detection.get_objects_typed(hailo.HAILO_UNIQUE_ID)

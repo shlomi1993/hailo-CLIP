@@ -115,16 +115,10 @@ def get_pipeline(self):
     )
 
     # Clip pipeline with muxer integration (no cropper)
-    clip_pipeline_wrapper = " ! ".join([
-        "tee name=clip_t hailomuxer name=clip_hmux clip_t.",
-        str(QUEUE(name="clip_bypass_q", max_size_buffers=20)),
-        "clip_hmux.sink_0 clip_t.",
-        str(QUEUE(name="clip_muxer_queue")),
-        "videoscale n-threads=4 qos=false",
-        clip_pipeline,
-        "clip_hmux.sink_1 clip_hmux.",
-        str(QUEUE(name="clip_hmux_queue"))
-    ])
+    clip_pipeline_wrapper = f'tee name=clip_t hailomuxer name=clip_hmux \
+        clip_t. ! {QUEUE(name="clip_bypass_q", max_size_buffers=20)} ! clip_hmux.sink_0 \
+        clip_t. ! {QUEUE(name="clip_muxer_queue")} ! videoscale n-threads=4 qos=false ! {clip_pipeline} ! clip_hmux.sink_1 \
+        clip_hmux. ! {QUEUE(name="clip_hmux_queue")} '
 
     # TBD aggregator does not support ROI classification
     # clip_pipeline_wrapper = INFERENCE_PIPELINE_WRAPPER(clip_pipeline, name='clip')
@@ -135,28 +129,22 @@ def get_pipeline(self):
     CLIP_PYTHON_MATCHER = f'hailopython name=pyproc module={hailopython_path} qos=false '
     CLIP_CPP_MATCHER = f'hailofilter so-path={clip_matcher_so} qos=false config-path={clip_matcher_config} '
 
-    clip_postprocess_pipeline = " ! ".join([
-        CLIP_PYTHON_MATCHER,
-        str(QUEUE(name="clip_postprocess_queue")),
-        "identity name=identity_callback"
-    ])
+    clip_postprocess_pipeline = f' {CLIP_PYTHON_MATCHER} ! \
+        {QUEUE(name="clip_postprocess_queue")} ! \
+        identity name=identity_callback '
 
     # PIPELINE
     if self.detector == "none":
-        PIPELINE = " ! ".join([
-            source_pipeline,
-            clip_pipeline_wrapper,
-            clip_postprocess_pipeline,
-            display_pipeline
-        ])
+        PIPELINE = f'{source_pipeline} ! \
+        {clip_pipeline_wrapper} ! \
+        {clip_postprocess_pipeline} ! \
+	    {display_pipeline}'
     else:
-        PIPELINE = " ! ".join([
-            source_pipeline,
-            detection_pipeline_wrapper,
-            tracker_pipeline,
-            clip_cropper_pipeline,
-            clip_postprocess_pipeline,
-            display_pipeline
-        ])
+        PIPELINE = f'{source_pipeline} ! \
+        {detection_pipeline_wrapper} ! \
+        {tracker_pipeline} ! \
+        {clip_cropper_pipeline} ! \
+        {clip_postprocess_pipeline} ! \
+		{display_pipeline}'
 
     return PIPELINE

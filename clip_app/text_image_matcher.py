@@ -19,7 +19,6 @@ Example: from TextImageMatcher import text_image_matcher
 
 # Set up the logger
 logger = setup_logger()
-
 # Change the log level to INFO
 set_log_level(logger, logging.INFO)
 
@@ -303,7 +302,6 @@ def main():
     for i in valid_entries:
         logger.info("Entry %s: %s similarity: %.4f", i, matcher.entries[i].text, matcher.entries[i].probability)
     logger.info("Time taken to run match(): %.4f seconds", end_time - start_time)
-
 
 if __name__ == "__main__":
     main()
