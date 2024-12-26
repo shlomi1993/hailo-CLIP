@@ -48,7 +48,6 @@ htmlcov/
 
 # Binaaries
 bin/
-resources/
 
 # Other Ignore Patterns
 *.bak
