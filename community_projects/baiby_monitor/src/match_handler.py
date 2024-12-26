@@ -22,10 +22,10 @@ class MatchHandler:
     BEHAVIOR_DICT = {
         # Cry detection
         "Calm baby": None,
-        "Crying baby": DetectionClass(function=play_mp3),
+        "Crying baby": DetectionClass(function=send_telegram_message, argument="Baby is crying"),
 
         # Sleep detection
-        "awaken baby": DetectionClass(function=send_telegram_message, argument="Baby is awake"),
+        "awaken baby": DetectionClass(function=play_mp3),
         "sleeping baby": None,
     }
 
@@ -38,7 +38,7 @@ class MatchHandler:
         detection_class = self.BEHAVIOR_DICT.get(label)
         if detection_class:
             detection_class.counter += 1
-            if detection_class.counter >= 50 and detection_class.is_activated is False:
+            if detection_class.counter >= 110 and detection_class.is_activated is False:
                 print(f"\nDetected {label}\n")
                 detection_class.function(detection_class.argument)
                 detection_class.is_activated = True
