@@ -36,8 +36,8 @@ The BAIby Monitor project is an open-source initiative aimed at developing a sma
 
    Create a `.env` file in the project directory and add necessary configuration variables as specified in `.env.example`.
    
-   # Telegram Bot Activation
-   a. Find @bAIbyMonbot in 'Telegram' App.
+   ** Telegram Bot Activation **:
+   a. Find @bAIbyMonbot in the 'Telegram' App.
    b. Press the 'Start' Button.
    c. You are ready to receive messages to your Telegram.
 
